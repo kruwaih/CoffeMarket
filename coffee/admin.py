@@ -1,4 +1,8 @@
 from django.contrib import admin
-# from models import Coffee
+from coffee.models import *
 
-# admin.site.register(Coffee)
+admin.site.register(Coffee)
+admin.site.register(Syrup)
+admin.site.register(Powder)
+admin.site.register(Beans)
+admin.site.register(Roast)
