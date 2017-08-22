@@ -1,11 +1,13 @@
 from django.shortcuts import render, redirect
-from .forms import SignUp, Login, CoffeeForm, SyrupForm, PowderForm, RoastForm, BeansForm
+from .forms import *
 from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponse, Http404
-from .models import Coffee, Syrup, Beans, Powder, Roast
+from django.http import HttpResponse, Http404, JsonResponse
+from .models import *
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
 from decimal import Decimal
+import json
+
 
 
 def usersignup(request):
@@ -91,7 +93,9 @@ def updateSyrup(request, syrup_id):
     return render(request, 'updateSyrup.html', context)
 
 def deleteSyrup(request, syrup_id):
-    syrup_object = Syrup.objects.get(syrup_id)
+    if not (request.user.is_staff or request.user.is_superuser):
+        raise Http404
+    syrup_object = Syrup.objects.get(id=syrup_id)
     syrup_object.delete()
     messages.success(request, "Successfully Deleted!")
     return redirect("coffee:createCoffee")
@@ -131,7 +135,9 @@ def updatePowder(request, powder_id):
 
 
 def deletePowder(request, powder_id):
-    powder_object = Powder.objects.get(powder_id)
+    if not (request.user.is_staff or request.user.is_superuser):
+        raise Http404
+    powder_object = Powder.objects.get(id=powder_id)
     powder_object.delete()
     messages.success(request, "Successfully Deleted!")
     return redirect("coffee:createCoffee")
@@ -170,7 +176,9 @@ def updateRoast(request, roast_id):
     return render(request, 'updateRoast.html', context)
 
 def deleteRoast(request, roast_id):
-    roast_object = Roast.objects.get(roast_id)
+    if not (request.user.is_staff or request.user.is_superuser):
+        raise Http404
+    roast_object = Roast.objects.get(id=roast_id)
     roast_object.delete()
     messages.success(request, "Successfully Deleted!")
     return redirect("coffee:createCoffee")
@@ -211,7 +219,9 @@ def updateBeans(request, beans_id):
     return render(request, 'updateBeans.html', context)
 
 def deleteBeans(request, beans_id):
-    beans_object = Beans.objects.get(beans_id)
+    if not (request.user.is_staff or request.user.is_superuser):
+        raise Http404
+    beans_object = Beans.objects.get(id=beans_id)
     beans_object.delete()
     messages.success(request, "Successfully Deleted!")
     return redirect("coffee:createCoffee")
@@ -266,7 +276,9 @@ def updateCoffee(request, coffee_id):
     return render(request, 'updateCoffee.html', context)
 
 def deleteCoffee(request, coffee_id):
-    coffee_object = Coffee.objects.get(coffee_id)
+    coffee_object = Coffee.objects.get(id=coffee_id)
+    if not(request.user.is_superuser or request.user.is_staff or request.user==coffee_object.user):
+        raise Http404
     coffee_object.delete()
     messages.success(request, "Successfully Deleted!")
     return redirect("coffee:createCoffee")
@@ -286,15 +298,141 @@ def coffeeList(request):
 ##################################################################################
 
 def coffeeDetails(request, details_id):
+    obj_details=Coffee.objects.get(id=details_id)
+    if not(request.user.is_superuser or request.user.is_staff or request.user==obj_details.user):
+        raise Http404
+    context={
+        'obj_details':obj_details,
 
-    if request.user:
-        obj_details=Coffee.objects.filter(user=request.user, id=details_id)
-        context={
-               'obj_details':obj_details
-
-                }
+            }
     return render(request,"userCoffeeDetails.html", context)
     # return redirect('coffee:userCoffeeList')
+
+
+################################################################################
+
+def addCities(request):
+    if not (request.user.is_staff or request.user.is_superuser):
+        raise Http404
+    form=CityForm(request.POST)
+    if form.is_valid():
+        form.save()
+        messages.success(request,"City Created")
+    context={
+        'form':form
+
+    }
+    return render(request,'addCity.html',context)
+
+def updateCities(request, city_id):
+    if not (request.user.is_superuser or request.user.is_staff):
+        raise Http404
+    city_obj=get_object_or_404(City, id=city_id)
+    form=CityForm(request.POST, instance=city_obj)
+    if form.is_valid():
+        form.save()
+        messages.success(request, 'City Updated')
+    context={
+        'form':form,
+        'instance':city_obj,
+    }
+
+    return render(request,'updateCity.html',context)
+
+def deleteCities(request, city_id):
+    city_obj = City.objects.get(id=city_id)
+    if not(request.user.is_superuser or request.user.is_staff):
+        raise Http404
+    city_obj.delete()
+    messages.success(request, "Successfully Deleted!")
+    return redirect('coffee:addCities')
+
+def createAddress(request):
+    form = AddressForm(request.POST)
+    if form.is_valid():
+        address_obj=form.save(commit=False)
+        address_obj.user=request.user
+        address_obj.save()
+        messages.success(request, "Address Created")
+
+    context={
+        'form':form
+
+    }
+    return render(request, 'createAddress.html', context)
+
+def updateAddress(request, address_id):
+    address_obj=get_object_or_404(Address, id=address_id)
+    form=AddressForm(request.POST, instance=address_obj)
+    if form.is_valid():
+        form.save()
+        messages.success(request,'Address Updated')
+    context={
+        'form':form,
+        'instance':address_obj,
+
+    }
+    return render(request,'updateAddress.html', context)
+    return redirect ('coffee:createAddress')
+
+def deleteAddress(request, address_id):
+    address_obj=Address.objects.get(id=address_id)
+    if not (request.user.is_staff or request.user.is_superuser or request.user==address_obj.user):
+        raise Http404
+    address_obj.delete()
+    messages.success(request, 'Address Deleted')
+    return redirect('coffee:createAddress')
+
+
+def userCoffee(request):
+    if not (request.user.is_superuser or request.user.is_staff):
+        raise Http404
+    userCoffee_obj=Coffee.objects.all()
+
+    context={
+        'userCoffee_obj':userCoffee_obj
+    }
+    return render(request, 'userCoffees.html', context)
+
+
+def priceCalculation(request):
+    total = Decimal(0)
+
+    beans_id = request.GET.get('beans')
+    if beans_id:
+        total+= Beans.objects.get(id=beans_id).price
+
+    roast_id = request.GET.get('roast')
+    if roast_id:
+        total+= Roast.objects.get(id=roast_id).price
+
+    shots= request.GET.get('shots')
+    total+= Decimal(int(shots) * 0.200)
+
+    foam = request.GET.get('foam')
+    if foam == 'true':
+        total+= Decimal(0.250)
+
+    syrup = json.loads(request.GET.get('syrup'))
+    for syrup in syrup:
+        total+=Syrup.objects.get(id=syrup).price
+
+    powder = json.loads(request.GET.get('powder'))
+    for powder in powder:
+        total+=Powder.objects.get(id=powder).price
+
+    print (round(total,3))
+    return JsonResponse(' It Worked', safe=False)
+
+
+
+
+
+
+
+
+
+
 
 
 

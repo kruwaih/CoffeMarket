@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block head_title %}List{% endblock head_title %}
+
+{% block content %}
+	<div class='row'>
+		<div class='col-sm-6 col-sm-offset-3'>
+
+	{% for x in userCoffee_obj %}
+	<h3><a href='{{x.get_absolute_url}}'>{{x.name}}</a></h3><br>
+	{% endfor %}
+
+
+
+
+</div>
+		</div>
+
+{% endblock content %}

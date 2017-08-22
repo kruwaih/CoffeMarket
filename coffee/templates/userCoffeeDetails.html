@@ -6,21 +6,19 @@
 	<div class='row'>
 		<div class='col-sm-6 col-sm-offset-3'>
 
-{% for x in obj_details %}
 	
-	<h3>user: </h3>{{x.user}}
-	<h3>Name: </h3>{{x.name}}
-	<h3>Powder: </h3>{{x.powder}}
-	<h3>Syrup: </h3>{{x.syrup}}
-	<h3>Roast: </h3>{{x.roast}}
-	<h3>Beans: </h3>{{x.beans}}
-	<h3>Milk: </h3>{{x.milk}}
-	<h3>Water: </h3>{{x.water}}
-	<h3>Foam: </h3>{{x.foam}}
-	<h3>Shots: </h3>{{x.shots}}
-	<h3>Extra Instructions: </h3>{{x.extra_instruction}}
-	<h3>Price: </h3>{{x.price}}
-{% endfor %}		
+	<h3>user: </h3>{{obj_details.user}}
+	<h3>Name: </h3>{{obj_details.name}}
+	<h3>Powder: </h3> {% for powder in obj_details.powder.all %}{{powder.name}} {% endfor %}
+	<h3>Syrup: </h3> {% for syrup in obj_details.syrup.all %}{{syrup.name}} 	{% endfor %}
+	<h3>Roast: </h3>{{obj_details.roast}}
+	<h3>Beans: </h3>{{obj_details.beans}}
+	<h3>Milk: </h3>{{obj_details.milk}}
+	<h3>Water: </h3>{{obj_details.water}}
+	<h3>Foam: </h3>{{obj_details.foam}}
+	<h3>Shots: </h3>{{obj_details.shots}}
+	<h3>Extra Instructions: </h3>{{obj_details.extra_instruction}}
+	<h3>Price: </h3>{{obj_details.price}}	
 
 
 </div>

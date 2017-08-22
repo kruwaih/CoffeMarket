@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django import forms
-from .models import Coffee, Powder, Syrup, Beans, Roast
+from .models import *
 
 class SignUp(forms.ModelForm):
 	class Meta:
@@ -18,25 +18,37 @@ class Login(forms.Form):
 class CoffeeForm(forms.ModelForm):
 	class Meta:
 		model = Coffee
-		fields = ['name', 'powder', 'syrup', 'roast', 'beans', 'milk', 'water', 'foam', 'shots', 'extra_instruction']
+		fields = '__all__'
+		exclude = ['user', 'price']
 
 
 class BeansForm(forms.ModelForm):
 	class Meta:
 		model = Beans
-		fields = ['name','price']
+		fields = '__all__'
 
 class SyrupForm(forms.ModelForm):
 	class Meta:
 		model = Syrup
-		fields = ['name', 'price']
+		fields = '__all__'
 
 class PowderForm(forms.ModelForm):
 	class Meta:
 		model = Powder
-		fields = ['name', 'price']
+		fields = '__all__'
 
 class RoastForm(forms.ModelForm):
 	class Meta:
 		model = Roast
 		fields = ['name']
+
+class CityForm(forms.ModelForm):
+	class Meta:
+		model=City
+		fields=['name']
+
+class AddressForm(forms.ModelForm):
+	class Meta:
+		model=Address
+		fields='__all__'
+		exclude = ['user']
