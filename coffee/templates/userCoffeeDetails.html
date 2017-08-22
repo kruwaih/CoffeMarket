@@ -5,6 +5,7 @@
 {% block content %}
 	<div class='row'>
 		<div class='col-sm-6 col-sm-offset-3'>
+	
 
 	
 	<h3>user: </h3>{{obj_details.user}}
@@ -18,8 +19,14 @@
 	<h3>Foam: </h3>{{obj_details.foam}}
 	<h3>Shots: </h3>{{obj_details.shots}}
 	<h3>Extra Instructions: </h3>{{obj_details.extra_instruction}}
-	<h3>Price: </h3>{{obj_details.price}}	
+	<h3>Price: </h3>{{obj_details.price}}<br>
 
+		
+	<a href="{% url 'coffee:updateCoffee' coffee_id=obj_details.id %}" class="btn btn-success btn-lg">Edit</a> 
+			
+	
+
+			
 
 </div>
 		</div>

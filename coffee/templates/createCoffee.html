@@ -2,13 +2,15 @@
 {% load crispy_forms_tags %}
 {% block head_title %}Create Coffee{% endblock head_title %}
 {% block content %}
+	
 	<div class='row'>
 		<div class='col-sm-6 col-sm-offset-3'>
+
 	<form method="POST" action="{% url 'coffee:createCoffee' %}" enctype="multipart/form-data" onchange="price()"> 
 		{% csrf_token %}
 		{{form|crispy}}
 
-			<h3>Price <span>0.000</span>KWD</h3>
+			<h3>Price <span id='total'>0.000</span>KWD</h3>
 		<input class='btn btn-primary' type='submit' value='Create'> 
 	</form>
 		</div>
@@ -22,8 +24,6 @@ function price(){
 	var beans = document.getElementById('id_beans');
 	var beans_id = beans[beans.selectedIndex].value;
 
-	var roast = document.getElementById('id_roast');
-	var roast_id = roast[roast.selectedIndex].value;
 
 	var syrup = document.getElementById('id_syrup');
 	var selected_syrup = [];
@@ -50,18 +50,19 @@ function price(){
 			beans:beans_id,
 			shots:shots,
 			foam:foam,
-			roast:roast_id,
 			syrup:JSON.stringify(selected_syrup),
 			powder:JSON.stringify(selected_powder),
 		},
 		error:function(){
 			console.log('Error')
 		},
-		success:function(){
-			console.log('Seccuss')
+		success:function(data){
+			console.log(data);
+			document.getElementById('total').innerHTML=data;
 		}
 
 	});
 }
 </script>
+
 {% endblock content %}

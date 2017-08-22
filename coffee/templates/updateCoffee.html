@@ -5,10 +5,66 @@
 {% block content %}
 	<div class='row'>
 		<div class='col-sm-6 col-sm-offset-3'>
-			<form method="POST" action="{% url 'coffee:updateCoffee' coffee_id=instance.id %}" enctype="multipart/form-data"> <!-- dont use csrf for GET and use it only on POST this is for security perpos -->
+			<form method="POST" action="{% url 'coffee:updateCoffee' coffee_id=instance.id %}" enctype="multipart/form-data" onchange="price()"> <!-- dont use csrf for GET and use it only on POST this is for security perpos -->
 
 			{% csrf_token %}
 			{{form|crispy}}
+
+
+			<h3>Price <span id='total'>{{ instance.price }}</span>KWD</h3>
+		
+	</form>
+		</div>
+	</div>
+<script>
+
+function price(){
+	var shots =document.getElementById('id_shots').value;
+	var foam = document.getElementById('id_foam').checked;
+
+	var beans = document.getElementById('id_beans');
+	var beans_id = beans[beans.selectedIndex].value;
+
+
+	var syrup = document.getElementById('id_syrup');
+	var selected_syrup = [];
+
+	for (var i = 0; i<syrup.length; i++){
+		if (syrup.options[i].selected){
+			selected_syrup.push(syrup.options[i].value);
+		}
+	}
+
+
+	var powder = document.getElementById('id_powder');
+	var selected_powder = [];
+	for (var i = 0; i<powder.length; i++){
+		if (powder.options[i].selected){
+			selected_syrup.push(powder.options[i].value);
+		}
+	}
+
+	$.ajax({
+		type:'GET',
+		url: '{% url "coffee:priceCalculation" %}',
+		data: {
+			beans:beans_id,
+			shots:shots,
+			foam:foam,
+			syrup:JSON.stringify(selected_syrup),
+			powder:JSON.stringify(selected_powder),
+		},
+		error:function(){
+			console.log('Error')
+		},
+		success:function(data){
+			console.log(data);
+			document.getElementById('total').innerHTML=data;
+		}
+
+	});
+}
+</script>
 			<input class='btn btn-primary' type='submit' value='update'>
 			</form>
 		</div>

@@ -262,11 +262,28 @@ def createCoffee(request):
 def updateCoffee(request, coffee_id):
     # if not (request.user.is_staff or request.user.is_superuser):
     #     raise Http404
-    coffee_object=Coffee.objects.filter(user=request.user, id=coffee_id)
+    coffee_object=Coffee.objects.get(id=coffee_id)
     # coffee_object = get_object_or_404(Coffee, id=coffee_id)
     form = CoffeeForm(request.POST or None, request.FILES or None, instance=coffee_object)
     if form.is_valid():
-        form.save()
+        obj = form.save(commit=False)
+        obj.user=request.user
+        obj.save()
+        form.save_m2m()
+        obj_beans = obj.beans.price
+        shots_price=0.200*obj.shots
+        milk_price=0.100*obj.milk
+
+        syrup_price=0
+        for syrup in obj.syrup.all():
+            syrup_price=syrup.price
+
+        powder_price=0
+        for powder in obj.powder.all():
+           powder_price=powder.price
+
+        obj.price=Decimal(obj_beans)+Decimal(shots_price)+Decimal(milk_price)+Decimal(syrup_price)+Decimal(powder_price)
+        obj.save()
         messages.success(request, "Updated")
         # return redirect('coffee:createCoffee')
     context = {
@@ -402,9 +419,6 @@ def priceCalculation(request):
     if beans_id:
         total+= Beans.objects.get(id=beans_id).price
 
-    roast_id = request.GET.get('roast')
-    if roast_id:
-        total+= Roast.objects.get(id=roast_id).price
 
     shots= request.GET.get('shots')
     total+= Decimal(int(shots) * 0.200)
@@ -421,8 +435,8 @@ def priceCalculation(request):
     for powder in powder:
         total+=Powder.objects.get(id=powder).price
 
-    print (round(total,3))
-    return JsonResponse(' It Worked', safe=False)
+
+    return JsonResponse(round(total,3), safe=False)
 
 
 
