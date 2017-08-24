@@ -21,6 +21,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
 	url(r'^coffee/', include('coffee.urls', namespace='coffee')),
+    url(r'^cart/', include('cart.urls', namespace='cart')),
 
 	]
 if settings.DEBUG:

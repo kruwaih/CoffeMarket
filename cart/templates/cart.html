@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+	
+	<div class="row">
+		<div class="col-sm-12">
+			<h1>Your Cart</h1>
+			<table class="table">
+
+					{% for item in cart.cartitem_set.all  %}
+						<tr>
+							<td>{{item.item.name}}</td>
+							<td>
+								<form action="{% url 'cart:mycart' %}" method="GET">
+									<input type="hidden" name="item" value="{{item.item.id}}">
+									<input type="number" name="qty" value="{{item.quantity}}">
+									<input type="submit" name="btn btn-warning" value="Update Item">
+								</form>
+							</td>
+							<td>{{item.line_item_total}}</td>
+						</tr>
+						
+					{% endfor %}
+					<tr>Subtotal:{{cart.subtotal}}</tr>
+					<tr>Delivery:{{cart.delivery_total}}</tr>
+					<tr>Total:{{cart.total}}</tr>
+			</table>
+		</div>
+	</div>
+{% endblock content %}

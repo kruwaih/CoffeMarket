@@ -23,8 +23,12 @@
 
 		
 	<a href="{% url 'coffee:updateCoffee' coffee_id=obj_details.id %}" class="btn btn-success btn-lg">Edit</a> 
-			
-	
+	<br><br>
+        <form action="" method="GET">
+        <input type="hidden" name="item" value="{{x.id}}">
+        <input type="number" name="qty" value="1">
+        <input type="submit" name="btn btn-success" value="Add to Cart">
+    </form>
 
 			
 

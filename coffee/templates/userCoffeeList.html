@@ -4,16 +4,29 @@
 
 {% block content %}
 	<div class='row'>
-		<div class='col-sm-6 col-sm-offset-3'>
-
 	{% for x in obj_list %}
-	<h3><a href='{% url "coffee:userCoffeeDetails" details_id=x.id %}'>{{x.name}}</a></h3><br>
-	{% endfor %}
+		<div class='col col-sm-4'>
+			<div clas='card' style="width: 02rem;">
+				<div class='card-body text-center'></div>
+					<div class='card-body text-center'></div>
 
+
+			</div>
+
+	
+	<h3><a href='{% url "coffee:userCoffeeDetails" details_id=x.id %}' >{{x.name}}</a></h3><br>
+	
+	
+	<form action="{% url 'cart:mycart' %}" method="GET">
+		<input type="hidden" name="item" value="{{x.id}}">
+		<input type="hidden" name="qty" value="1">
+		<input type="submit" name="btn btn-success" value="Add to Cart">
+	</form>
 
 
 
 </div>
+{% endfor %}
 		</div>
 
 {% endblock content %}
